@@ -108,7 +108,7 @@ Object.freeze(my_littilewitespace_variable);
 my_little_constant.monster = "free"; //FAIL
 my_little_constant.monster // undefined
 my_little_constant.butterfly //"free"
-my_littilewitespace_variable = Math.PI; 
+my_littilewitespace_variable = Math.PI;
 // my_littilewitespace_variable is approximately π
 my_little_constant = Math.PI ; //FAIL
 
@@ -272,13 +272,90 @@ let my_little_value = (
  * Disruption
  * 中断
  */
+
+ // JavaScript有4个中断语句,它们改变控制流,没有goto!,它们是break,continue,throw,return
+
+ // break;语句用来退出一个循环,它也可以被用来离开一个switch语句,如果我们使用switch语句的话,但是那会变得很复杂如果在一个循环中使用switch语句
+
+ // continue语句是一个goto语句,它会跳到循环的顶部,我从来没有看过一个程序不是以移除它作为程序的改进的
+
+ // throw语句提升(抛出)一个异常
+
+ // 我最喜欢的中断语句是return.它结束了一个函数的执行,并且指定一个返回值
+ // 有个学校教说一个函数只能有一个return语句
+ // 我从来没有看到过任何的证据表表明那么教会受益很多
+ // 我认为在一个函数觉得需要返回一个值的时候返回更有意义而不是过滤到只有唯一个出口点
+
+ // JavaScript确实没有goto语句,但是它允许所有的语句拥有标签
+ // 我认为这是一个错误,语句不需要有标签
+
+ // 标签：在javascript中通过break或者continue来跳转,很像goto
+
+
+
 /**
  * potpourri
  * 杂项
  */
+
+ // throw语句,try语句,和catch子句另外讨论
+
+ // import export语句另外讨论
+
+ // debugger语句可能会到导致执行的暂停,类似于到达一个断点
+ // debugger语句只允许被用在开发模式
+ // 在把程序打包成production模式的时候之前应该把debugger从程序中移除
+
 /**
  * punctuation
  * 标点符号
  */
 
+ // JavaScript允许if,else,和循环语句即可使用一个语句也可使用一个块
+ // 永远使用一个块,哪怕块中只有一句话
+ // 这个可以让代码更有弹性,它会更容易来改善代码,从而不至于引入错误
+ // 不要在你的代码中设置一些可能会绊倒你的同事的语法的陷阱
+ // 代码完好地执行是非常重要的
 
+ // 表达式语句,do语句,中断性语句,还有debugger语句都要以分号结尾
+ // JavaScript有一个迷惑特性叫做自动分号插入,这种机制是为了让初学者更简单地去编程
+ // 让他们不用使用分号.
+ // 不幸的是,他们会以不好的方式失败,所以要像专业人士一样来写代码
+ // 如果javascript是被设计成一个没有分号的语法可能会更好
+ // 但是它不是,所以也不要假装它是
+ // 这个困惑会导致错误
+ // 如果一个语句太长以至于不能够在一行内,那么就需要换行
+ // 我在一个(,[,{后面换行
+ // 它们匹配的),],}在一个新行开始并且和之前换行的位置保持一样的缩进
+ // 他们中间的内容,会有4个空格的缩进
+
+/**
+ * conclusion
+ * 结论
+ */
+
+ // 申明:let const function,注意function的变量提升
+
+ // 在语句中的起作用的表达式
+ // 赋值表达式:由 左值 操作符 生成一个值的表达式 分号 4部分组成
+ // 不推荐使用++,--
+ // 函数调用:纯不纯粹要看是否具有副作用
+ // delete:修改了对象,显然是有副作用的
+
+ // 语句中的分支
+ // if else if  else 搞定
+
+
+ // 循环
+ // 推荐使用尾调递归来实现(函数式编程的方式)
+
+ // 中断
+ // break,continue,return;
+
+ // 杂项
+ // throw  try catch
+ // import export
+ // debugger
+
+ // 标点符号
+ // 注意换行,始终使用分号
