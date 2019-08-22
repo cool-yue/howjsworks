@@ -70,7 +70,7 @@ my_little_string === String.fromCharCode(99,111,114,110) // true
 // javascript不关心.它允许所有的16bit码,如果你视图让你的系统与其他系统交互
 // 其他系统是通过一个lesser language,比如java,你应该不能乱用Unicode
 
-// String字面量以双引号围绕0个或者多个Unicode字符(但引号也行,不推荐因为没必要)
+// String字面量以双引号围绕0个或者多个Unicode字符(单引号也行,不推荐因为没必要)
 // 每一个字符代表一个16bit的元素
 
 // + 操作符用来做拼接操作
