@@ -91,3 +91,103 @@
  function is_zero(big) {
      return !Array.isArray(big) || big.length < 2;
  }
+
+ // mint函数从array中移出最后一个单元bit如果他们是0
+ // 它会替代一个常量,如果有一个匹配
+ // 如果没有匹配的,它会冰冻这个数组
+ // 有一种实现宣称在某些情况下能够更快
+ // 若果它允许修改数组
+ // 但是它会变得不够纯粹并且更容易导致bug
+ // 我们的大整数都不可变,就像JavaScript的数一样
+
+ function mint(proto_big_integer) {
+    // 一个原始大整数冰一个大整数
+    // 删除前面是0的bit位
+    // 如果可行替换一个常用的常量
+    while (last(proto_big_integer === 0)) {
+        proto_big_integer -= 1;
+    }
+    if (proto_big_integer.length <= 1) {
+        return zero;
+    }
+    if (proto_big_integer[sign] === plus) {
+        if (proto_big_integer.length === 2) {
+            if (proto_big_integer[least] === 1) {
+                return wun;
+            }
+            if (proto_big_integer[least] === 2) {
+                return two;
+            }
+            if (proto_big_integer[least] === 10) {
+                return ten;
+            }
+        }
+    } else if (proto_big_integer.length === 2) {
+        if (proto_big_integer[least] === 1) {
+            return negative_wun;
+        }
+    }
+    return Object.freeze(proto_big_integer);
+ }
+
+ // 我们第一个实际上的函数是negation(取反),绝对值和符号提取
+
+ function neg(big) {
+     if (is_zero(big)) {
+         return zero;
+     }
+     let negation = big.slice();
+     negation[sign] = (
+         is_negative(big)
+         ? plus
+         :minus
+     );
+     return mint(negation);
+ }
+
+ function signum(big) {
+     return (
+         is_zero(big)
+         ? zero
+         : (
+             is_negative(big)
+             ? negative_wun
+             : wun
+         )
+     );
+ }
+
+ // eq函数决定是否2个大整数包含一样的bit
+ function eq(comparahend,comparator) {
+     return comparahend === comparator || (
+         comparahend.length === comparator.length
+         && comparahend.every(function(element,element_nr) {
+             return element === comparator[element_nr];
+         })
+     );
+ }
+
+ // abs_lt函数决定一个大整数的绝对值是否比另外一个大数的绝对值小.
+ // lt函数判定一个有符号的大整数是否比另外一个有符号的大整数小
+ // 当2个大整数有一样的长度的时候,这个函数就工作得更繁琐了
+ // 它们会少一点繁琐,如果有一个倒装的reduce的版本并且也能安全退出
+
+ function abs_lt(comparahend,comparator) {
+     // 不管这个符号
+     // 数字有更多的bit就会更大,如果它们包含一样的长度的bit,就需要逐个比对每个bit
+
+     return (
+         comparahend.length === comparator.length
+         ? comparahend.reduce(
+             function (reduction,element,element_nr) {
+                 if (element_nr !== sign) {
+                     const other = comparator[element_nr];
+                     if (element !== other) {
+                         return element < other;
+                     }
+                 }
+                 return reduction;
+             }
+         )
+     );
+ }

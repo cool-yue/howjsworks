@@ -74,7 +74,10 @@ function curry(func,...zeroth) {
 
 // 当一个函数被调用的时候,一个activation object(活动对象)创建了
 // 活动对象对你来说不可见.
-// 它是一个隐藏的数据结构,这个数据结构持有当前这个函数执行所有需要的相关信息和绑定和正在调用的函数的活动的返回地址
+// 它是一个隐藏的数据结构,这个数据结构持有当前这个函数执行所有需要的相关信息和绑定和正在调用的函数的的返回地址(return address)
+
+// 这个返回地址是,当一个函数执行完成时控制权在当前函数内部,执行完后,显然后面的代码还要执行,所以要交出控制权
+// 交出控制权也就是需要返回一个地址,这个地址代表着当前调用这个函数的指令的下一条指令的地址
 
 // 在像c语言这样的语言,活动对象被分配在一个栈上.
 // 他们解除分配（弹栈）当函数返回
@@ -85,9 +88,47 @@ function curry(func,...zeroth) {
 // 活动对象的回收就像普通对象一样回收
 
 // 一个活动对象包含:
-// 一个对函数对象的引用
+// 一个函数对象的引用
+
+// http://dmitrysoshnikov.com/ecmascript/javascript-the-core
+// 以下这段英文来自上面这个链接
+
+// A context which activates another context is called a caller.
+// A context is being activated is called a callee
+// A callee at the same time may be a caller of some other callee
+// (e.g. a function called from the global context, calls then some inner function).
+
+/**
+ * When a caller activates (calls) a callee, the caller suspends its execution and passes the control flow to the callee.
+ *  The callee is pushed onto the the stack and is becoming a running (active) execution context.
+ * After the callee’s context ends, it returns control to the caller, and the evaluation of the caller’s context proceeds (it may activate then other contexts) till the its end, and so on.
+ * A callee may simply return or exit with an exception. A thrown but not caught exception may exit (pop from the stack) one or more contexts.
+ *
+ *
+ */
+
+
+// In a function context, a variable object is presented as an activation object.
+
 // caller的活动对象的引用,这个给return来使用,来给回控制权
 // caller是什么,这个可以看mdn
+
+// 比如下面这个代码;
+function abc() {
+    bcd();
+    let a = 1;
+    let b = 2;
+}
+
+abc();
+
+// 调用abc的时候,产生abc的活动对象,这里称呼为abc_active,current_active为abc_active,这个时候开始执行函数abc
+// abc里面又调用了bcd(),这个时候bcd也要产生一个活动对象bcd_active,对于bcd,caller是活动对象是abc_active
+// 所以bcd_active中有abc_active的引用,当前执行bcd的时候,current_active是bcd_active,当bcd执行完毕后,要把控制权交回到abc中
+// bcd()的调用的下一个指令是一个赋值语句,let a = 1; 这个指令
+
+
+
 // 恢复信息(程序继续执行信息)是用来在一个调用之后往后继续执行
 // 这个通常总是一个指令的地址,在一个函数调用完之后迅速接上这个地址
 
@@ -119,8 +160,25 @@ abc.__proto__ // Function.prototype
 
 // 函数对象也包含2个隐藏属性
 // 一个对于函数可执行代码的引用
-// 一个活动对象的引用,这个引用在函数对象产生的时候就处在激活状态,这使得闭包产生可能
-// 一个函数可以用该函数创建的那些隐藏属性来访问函数的变量。
+// 一个活动对象的引用,在函数对象产生的时候这个引用就处在激活状态,这使得闭包产生可能
+// 一个函数可以通过这些隐藏属性来访问函数的变量。
+
+// 比如
+function abc() {
+    let private_a = 1;
+    return function bcd() {
+        console.log(private_a);
+    }
+}
+
+let a = abc();
+a(); // 1
+
+
+
+
+
+
 
 // free varaiable术语有时用来描述一个函数使用的变量,这个变量是在函数外定义的
 // bound varaiable术语有时候用来描述变量在函数内申明的包含函数的参数
