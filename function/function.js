@@ -115,6 +115,8 @@ function curry(func,...zeroth) {
 
 // 比如下面这个代码;
 function abc() {
+    function bcd() {
+    }
     bcd();
     let a = 1;
     let b = 2;
@@ -122,10 +124,14 @@ function abc() {
 
 abc();
 
-// 调用abc的时候,产生abc的活动对象,这里称呼为abc_active,current_active为abc_active,这个时候开始执行函数abc
+// 调用abc的时候,产生abc的活动对象,这里称呼为abc_active,current_active为abc_active,这个时候开始执行函数abc里面的代码
+// 注意到abc里面创建了函数bcd,所以在bcd中有一个影藏的引用,能够在创建bcd的时候存着abc_active的活动对象的引用,因为这个
+// 时候current_active是abc_active
+
 // abc里面又调用了bcd(),这个时候bcd也要产生一个活动对象bcd_active,对于bcd,caller是活动对象是abc_active
 // 所以bcd_active中有abc_active的引用,当前执行bcd的时候,current_active是bcd_active,当bcd执行完毕后,要把控制权交回到abc中
-// bcd()的调用的下一个指令是一个赋值语句,let a = 1; 这个指令
+// bcd()的调用的下一个指令是一个赋值语句,let a = 1; 这个指令也会放在bcd_active中,当执行完毕的时候,去找个指令,同时把控制权交回
+// abc()也就是将current_active设置为abc_active
 
 
 
@@ -160,8 +166,9 @@ abc.__proto__ // Function.prototype
 
 // 函数对象也包含2个隐藏属性
 // 一个对于函数可执行代码的引用
-// 一个活动对象的引用,在函数对象产生的时候这个引用就处在激活状态,这使得闭包产生可能
-// 一个函数可以通过这些隐藏属性来访问函数的变量。
+// 一个活动对象的引用,在该函数对象创建的时候,那个时候活跃的活动对象的引用
+// 这样就在这个函数调用的时候能够通过这个对象来找到父作用域(创建这个函数的函数的申明变量)的变量,这也是闭包的原理
+// 一个函数可以通过这些隐藏属性来访问创建这个函数的函数的变量。
 
 // 比如
 function abc() {
@@ -173,11 +180,6 @@ function abc() {
 
 let a = abc();
 a(); // 1
-
-
-
-
-
 
 
 // free varaiable术语有时用来描述一个函数使用的变量,这个变量是在函数外定义的
