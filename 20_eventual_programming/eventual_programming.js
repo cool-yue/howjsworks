@@ -291,7 +291,7 @@ my_little_dom_node.addEventListener("click",callback function ,false);
   */
 
   // 你的很多工作是在创造一个传入参数来返回requestors的工厂
-  // 这个工厂是一个简单的包装器,能够接收任何一个参数函数然后返回一个requestor
+  // 这个工厂是一个简单的包装器,能够接收任何一个参数函数(argument function)然后返回一个requestor
 
   function requestorize(unary) {
       return function requestor(callback,value) {
@@ -306,7 +306,7 @@ my_little_dom_node.addEventListener("click",callback function ,false);
   // 这个工厂创建了一个可以读在nodejs上面读文件的requestor
   function read_file(directory,encoding = "utf-8") {
       return function read_file_requestor(callback,value) {
-          return false.readFile(
+          return fs.readFile(
               directory + value,
               encoding,
               function (err,data) {
@@ -316,8 +316,8 @@ my_little_dom_node.addEventListener("click",callback function ,false);
                       : callback(data)
                   );
               }
-          )
-      }
+          );
+      };
   }
 
   // 最有意思的工厂创造的requestors与其他的服务以对话的形式交互很多次

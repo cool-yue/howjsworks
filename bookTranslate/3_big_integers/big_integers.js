@@ -187,7 +187,133 @@
                      }
                  }
                  return reduction;
-             }
+             },
+             false
+         )
+         : comparahend.length < comparator.length
+     );
+ }
+
+ function lt(comparahend,comparator) {
+     return (
+         comparahend[sign] !== comparator[sign]\
+         ? is_negative(comparahend)
+         : (
+             is_negative(comparahend)
+             ? abs_lt(comparator,comparahend)
+             : abs_lt(comparahend,comparator)
          )
      );
  }
+
+ // 当你有lt的时候,你可以很容易地组成其他的比较通过交换和相互作用
+
+ function ge(a,b) {
+     return !lt(a,b);
+ }
+
+ function gt(a,b) {
+     return lt(b,a);
+ }
+
+ function le(a,b) {
+     return !lt(b,a);
+ }
+
+ // 现在我们创建位操作的函数,我们每一个大数都包含bit
+ // 我们假定bit位操作跟符号无关
+ // 所以,符号会在输入的时候被忽略掉
+ // 然后变成"+"来输出
+
+ // 我们的第一个函数是and,or,xor.
+ // and函数处理较短的数组
+ // and函数不关心在长数组中超出的bit
+ // 超出的bit全部和0进行与炒作然后消失
+ // or和xor函数工作在较长的数组
+
+ function and(a,b) {
+     // 创建一个更短的数组
+     // 这里用了解构语法
+     if (a.length > b.length) {
+         [a,b] = [b,a];
+     }
+     return mint(a.map(function (element,element_nr) {
+         return (
+             element_nr === sign
+             ? plus
+             : element & b[element_nr]
+         );
+     }))
+ }
+
+ function or(a,b) {
+     // 创建一个更长的数组
+     if (a.length < b.length) {
+         [a,b] = [b,a];
+     }
+     return mint(a.map(function (element,element_nr) {
+         return (
+             element_nr === sign
+             ? plus
+             : element | (b[elment_nr] || 0)
+         );
+     }));
+ }
+
+ function xor(a,b) {
+     // 创建一个更长的数组
+     if (a.length < b.length) {
+         [a,b] = [b,a];
+     }
+     return mint(a.map(function(element,element_nr) {
+         return (
+             element_nr === sign
+             ? plus
+             : element ^(b[element_nr] || 0)
+         );
+     }));
+ }
+
+ // 我们有一些函数接受一个小整数作为实参
+ // int函数让它更简单来控制number和big int
+
+ function int(big) {
+     let result;
+     if (typeof big === "number") {
+         if (Number.isSafeInteger(big)) {
+             return big;
+         }
+     } else if (is_big_integer(big)) {
+         if (big.length < 2) {
+             return 0;
+         }
+         if (big.length === 2) {
+             return 0;
+         }
+         if (big.length == 3) {
+             result = big[least + 1] * radix + big[least];
+             return (
+                 is_negative(big)
+                 ? -result
+                 : result
+             );
+         }
+         if (big.length === 4) {
+             result = (
+                 big[least + 2] * radix_squared
+                 + big[least + 1] * radix
+                 + big[least]
+             );
+             if (Number.isSafeInteger(result)) {
+                 return (
+                     is_negative(big)
+                     ? -result
+                     : result
+                 );
+             }
+         }
+     }
+ }
+
+ // shift_down函数通过删除最低bit位来缩减数值
+ //
