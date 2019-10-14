@@ -64,8 +64,12 @@ function run(
     throttle = 0
 ) {
     // run函数做的工作对于所有的Parseq工厂来说都是常规操作
-    // 它接受工厂的名称,一个requestors的数组,一个初始化的值,一个action回调
-    // 一个timeout回调,一个以毫秒为单位的时间限制,然后一个节流
+    // 它接受工厂的名称,
+    // 一个requestors的数组
+    // 一个初始化的值
+    // 一个action回调
+    // 一个timeout回调,一个以毫秒为单位的时间限制
+    // 然后一个节流,这个节流表示每次最大的处理requestor的个数
 
     // 如果所有的都正常工作,我们在数组中调用所有的requestor函数
     // 他们每一个都返回一个cancel函数,这个函数保存在在cancel_array.

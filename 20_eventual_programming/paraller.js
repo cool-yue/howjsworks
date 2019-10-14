@@ -1,4 +1,6 @@
 // parallel函数是最复杂的因为可选requestor数组
+// parallel,race,fallback,sequence都是工厂
+// 这些工厂将接收的requestor数组通过run方法,根据它们指定的方式(通常是方法字面上的意思)来运行
 
 function parallel(
     required_array,
@@ -47,12 +49,21 @@ function parallel(
         }
     }
     check_requestor_array(requestor_array,factory_name);
+    // 以上的代码合并了requestor
+    // 同时检查requestor是符合要求,也就是每个requestor都有2个参数,一个回调,一个原始输入值
+
+    // 将传入的requestor又转换成一个更大的requestor
+    // number_of_required; 标志着required的个数
+    // requestor_array;标志着required和optional的个数
     return function parallel_requestor(callback,initial_value) {
+        // 检查回调
         check_callback(callback,factory_name);
+        // 拿到所有的requestor的个数
         let number_of_pending = requestor_array.length;
+        // 拿到所有的required的
         let number_of_pending_required = number_of_required;
         let results = [];
-        // ran让它开始
+        // 执行run,run返回一个cancel函数
         let cancel = run(
             factory_name,
             requestor_array,
