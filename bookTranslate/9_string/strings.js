@@ -115,6 +115,11 @@ parts[1].padStart(10,"/") // "///rainbow"
  * More unicode
  * 更多 unicode
  */
+ // 非常棒地讲解unicode
+ // https://unicodebook.readthedocs.io/about.html
+
+ // utf-8这个编码是个变化的,它从1byte到4byte,它的缺点在于如果你想通过index的偏移量来得到这个字符编码
+ // 会非常困难,因为每个字符的编码长度可能不同
 
  // unicode的原始目的是能够以16bit来表示全世界存在的语言
  // 它的表后来改变成了21bit来表示全世界的语言
@@ -136,15 +141,42 @@ parts[1].padStart(10,"/") // "///rainbow"
  // 有1024个高替代code units 和 1024个低的code units
  // 高的替代code units的codes比低的要小
 
- //0xD800 到 0XDBFF //高替代code units
- //0xDC00 到 0xDFFF //低替代code units
+
+ /**
+  * 这里描述为什么会引入surrogate pair
+  * The term "surrogate pair" refers to a means of encoding Unicode characters with high code-points in the UTF-16 encoding scheme.
+  * In the Unicode character encoding, characters are mapped to values between 0x0 and 0x10FFFF.
+  * Internally, Java uses the UTF-16 encoding scheme to store strings of Unicode text. In UTF-16, 16-bit (two-byte) code units are used.
+  *  Since 16 bits can only contain the range of characters from 0x0 to 0xFFFF,
+  * some additional complexity is used to store values above this range (0x10000 to 0x10FFFF). This is done using pairs of code units known as surrogates.
+  * The surrogate code units are in two ranges known as "high surrogates" and "low surrogates",
+  * depending on whether they are allowed at the start or end of the two-code-unit sequence.
+  */
+
+ // Surrogates are characters in the Unicode range U+D800—U+DFFF (2,048 code points)
+
+ // 0xD800 到 0XDBFF //高替代code units
+ // 0xDC00 到 0xDFFF //低替代code units
+ // 为什么是这个区间,根据utf16 surrogate pairs的定义,在这个16bit的区间里面
+ // characters in ranges U+0000—U+D7FF and U+E000—U+FFFD are stored as a single 16 bits unit
+ // 0000到D7FF和E000到FFFD它们是以single 16 bits unit来表示,也就是说,解析的编码的时候就会认为这个区间的字符只有一个code unit,其余的显然就是要形成surrogate pairs
+ // 从0xD800到0XDBFF正好是1024个
+ // 从0xDC00到0xDFFF也是1024个
+ // 最后需要使用surrogate pairs的时候,它可以根据2个16bit的编码来表示,这2个16bit的编码值不在singe 16 bits unit区间内
+ // 因此系统会把这2个16bit单元当成一个BMP平面外的一个字符
 
 // 当成功配对时,每一个替代code unit贡献10个bit来形成一个20bit的偏移
+// 前面说到了有17个65536(16bit的形成的不同的数的个数)
+// 基础平面占用了这16bit的编码,关键是unicode不止这些还需要有1114112 - 65536这些补充也就是16个65536也就是(2**4)*(2*16),这相当于有20bit
+// 这20bit的补充平面是没算基础平面的,20bit依旧能够表16bit表示的数,这样就混淆了
+// 那么这20bit就不能单纯作为code point,它们需要改装,这20bit需要基于65536的基础上做加法,就可以避免跟前16bit的数发生了重叠
+// 也就是20bit里面的1和16bit里面的1不是同一个1,20bit的1是偏移量,16bit的1就是1
+
 // 相对65536（已经被添加）从而形成了code point
 // 这个添加是为了终结有2个不同序列的code units但是最后制造了同一个code point的困惑
 // 我认为这个解决方法导致更多的的困惑
 // 一个简单的解决是让使用替代对在BMP中变成合法来表示一个code point
-// 这个就产生了一个20bit的字符集,而不是一个21bit的字符集
+// ????这个就产生了一个20bit的字符集,而不是一个21bit的字符集????（注意注意注意：按照作者的说法,这里应该是形成一个21bit的字符集而不是20bit的字符集）
 
 // 考虑到the code ponit U+1F4A9(128169).
 // 我们减去65536然后产生62633或者0xF4A9
@@ -205,7 +237,7 @@ u_diaeresis.normalize() === umlaut_u.normalize(); //true
  // javascritp模板字符串字面量意图是为模板提供支持
  // 同时减轻安全问题,这个部分情况下是成功的
 
- // 模板字符串字面量是能够放入多个行字符串字面量
+ // 模板字符串字面量是能够放入多行字符串字面量
  // `用来作为分隔符
 
  const old_form = (
@@ -426,7 +458,7 @@ console.log(example);
 // example的值是 "Hello,WORLD! :{"
 
 // entitiyify 函数让text插入到html中更安全
-function entitiyify(text) {
+function entityify(text) {
     return text.replace(/&/g,"$amp;").replace(/</g,"$lt;").replace(/>/g,"$gt;").replace(/\\/g,"$bsol").replace(/"/g,"$quot;");
 }
 
