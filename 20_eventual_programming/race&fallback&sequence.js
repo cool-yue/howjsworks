@@ -24,12 +24,14 @@ function race(requestor_array,time_limit,throttle) {
                 // 我们有一个胜者
                 // 取消掉输者然后把之传送给callback
                 if (value !== undefined) {
+                    // 这里调用cancel是因为要取消掉timeout
                     cancel(make_reason(factory_name,"Loser.",number));
                     callback(value);
                     callback = undefined;
                 }
                 // 没有胜者,给个失败信号
                 if (number_of_pending < 1) {
+                    // 这里调用cancel是因为要取消掉timeout
                     cancel(reason);
                     callback(undefined,reason);
                     callback = undefined;
@@ -41,6 +43,8 @@ function race(requestor_array,time_limit,throttle) {
                     "Timeout.",
                     time_limit
                 );
+                // 这里调用cancel是因为时间已经到了
+                // 这里要清理还没执行的requestor
                 cancel(reason);
                 callback(undefined,reason);
                 callback = undefined;

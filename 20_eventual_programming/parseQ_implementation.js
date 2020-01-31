@@ -68,8 +68,9 @@ function run(
     // 一个requestors的数组
     // 一个初始化的值
     // 一个action回调
-    // 一个timeout回调,一个以毫秒为单位的时间限制
-    // 然后一个节流,这个节流表示每次最大的处理requestor的个数
+    // 一个timeout回调
+    // 一个以毫秒为单位的时间限制
+    // 一个节流,这个节流表示每次最大的处理requestor的个数
 
     // 如果所有的都正常工作,我们在数组中调用所有的requestor函数
     // 他们每一个都返回一个cancel函数,这个函数保存在在cancel_array.
@@ -85,9 +86,9 @@ function run(
         // 或者parallel停止没有完成选项
 
         // 如果一个计数器正在运行,停掉它
-        if (time_id !== undefined) {
+        if (timer_id !== undefined) {
             clearTimeout(timer_id);
-            time_id = undefined;
+            timer_id = undefined;
         }
         // 如果有任何还在执行的东西,取消它
         if (cancel_array !== undefined) {
@@ -122,16 +123,18 @@ function run(
                 cancel_array[number] = requestor(
                     function start_requestor_callback(value, reason) {
                         // 这个callback函数被requestor调用,当完成的时候
-                        // 如果我们不在运行,这个调用会被忽略
+                        // 如果我们不再运行,这个调用会被忽略
                         // 例如,它可以是一个已经过期超过了时间限制的被传送回来的结果
                         // 这个回调只会被调用一次
                         if (
                             cancel_array !== undefined
                             && number !== undefined
                         ) {
-                            // 我们不在需要这个requestor相关的取消函数了
+                            // 我们不再需要这个requestor相关的取消函数了
                             cancel_array[number] = undefined;
                             // 调用action函数让requestor知道发生了什么
+                            // 也就是记录结果
+                            // 如果收到了undefined,那么就cancel吧
                             action(value, reason, number);
                             // 清理number所以这个回调就不能被再次使用
                             number = undefined;

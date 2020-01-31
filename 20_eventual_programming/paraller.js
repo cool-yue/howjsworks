@@ -11,7 +11,7 @@ function parallel(
     factory_name = "parallel"
 ) {
     // parallel工厂是这些工厂中最复杂的一个
-    // 它接收一个第二个requestor的数组,这个数组可以以更宽松的策略来对处理
+    // 它可以接收第二个requestor数组(optional_array),这个数组可以以更宽松的策略来对处理
     // 它返回一个制造一个数组值的requestor
     let number_of_required;
     let requestor_array;
@@ -78,6 +78,9 @@ function parallel(
                 // 如果可选的requestor失败了,我们仍然可以继续
                 if (number < number_of_required) {
                     number_of_pending_required -= 1;
+                    // 约定是,如果结果是undefined
+                    // 证明这一次请求是失败的
+                    // 不管是服务器问题还是别的
                     if (value === undefined) {
                         cancel(reason);
                         callback(undefined,reason);
@@ -114,13 +117,14 @@ function parallel(
                     time_limit
                 );
                 if (time_option === false) {
+                    // required没有时间限制
                     time_option = undefined;
                     if (number_of_pending_required < 1) {
                         cancel(reason);
                         callback(results);
                     }
                 } else {
-                    // 时间过期了
+                    // required有时间限制并且时间到了
                     // 如果所有的必须requestor都成功了
                     // parallel操作就成功了
                     cancel(reason);
