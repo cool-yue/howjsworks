@@ -1,15 +1,11 @@
 {
   "scripts": {
-    "build": "node_modules/.bin/webpack --config webpack.config.js"
+    "build": "./node_modules/.bin/webpack --config webpack.config.js"
   },
   "name": "howjavascriptworks",
   "version": "1.0.0",
   "main": "webpack.config.js",
-  "dependencies": {
-    "babel-loader": "^8.0.6",
-    "webpack-cli": "^3.3.6",
-    "webpack": "^4.38.0"
-  },
+  "dependencies": {},
   "devDependencies": {},
   "author": "",
   "license": "ISC",
