@@ -2,7 +2,7 @@
  * How JSON Works
  */
 
- // 在这里,对于第一次发布的时候,我告诉你世界上最喜欢的交互格式的数据的最初真实故事
+ // 在这里,第一波文字,我告诉你世界上最喜欢的交互格式的数据的最初真实故事
 
  /**
   * Discovery
@@ -11,7 +11,7 @@
   // JSON是在2001年在Chip Morningstar的房子后面的一个棚子里面被发现的
   // Chip和我已经开始了一个公司来为一个单页的web应用开发一个平台
   // 我们的分工是,使用一个好的JavaScript库(Douglas crockford写)和一个性能好并且可伸缩的会话服务器(Chip写)
-  // 这可以创建出一个web页面跟可安装的程序一样好,或者更好,因为我们的平台也支持多用户合作
+  // 这可以创建出一个web页面跟安装程序一样好,或者更好,因为我们的平台也支持多用户合作
   // 这是当时web还不能够胜任的
 
   // 我对Chip写的session服务器印象深刻.他在多年里重实现了这个服务器很多次
@@ -27,20 +27,20 @@
   // 巨人像是微软,IBM,Oracle,Sun,HP还有其他公司决定下一代的软件准备在XML上面构建,它们的外围组织和客户纷纷效仿
 
   // 我们想要在2个不同的语言写的程序之间交互数据
-  // 我们看了XML,觉得它是适应我们的程序非常的糟糕
+  // 我们看了XML,觉得它跟我们想要解决的问题非常不适
   // 使用XML的模式是首先你发送一个query到服务器,服务器返回一个XML文档
   // 然后拿到数据,你再在这个XML文档中再来query
   // 为什么服务器不能够发送一个数据我们的程序可以立即使用呢?
   // 我们的数据根本不像一个文档
 
   // 在那个时候,有很多改进的XML的变体和替代品可用
-  // 但是没有一个具有牵引力(traction)
+  // 但是没有一个具有牵引力(traction),能够真正解决痛点而具备很强的影响力
   // 我们想过自己去弄一个出来
   // 然后我自己有个想法
   // 我们可以使用JavaScript对象字面量,它们已经内建进JavaScript了
   // 所以在JavaScript这边非常的方便
-  // 我所需要的子集在Java端也不是很难去解析
-  // 它显然比XML好解析
+  // 我所需要剩余的工作就是在Java端去解析,显然这不是很难
+  // 它显然比XML好解析,也比xml更高效
 
   // 我们想要我们的平台跟微软的IE和网景浏览器工作
   // 那样非常的困难,因为他们各自都在创造他们自己的特性
@@ -51,14 +51,14 @@
   // 两个浏览器都有JavaScript并且都有<frameset>这个标签
   // 所以我们把这些用在一起来锻造一个通信通道
   // 这是第一个传送到浏览器的JSON信息
-  <HTML>
+ ` <HTML>
       <head>
           <script>
             document.domain = "fudco.com"
             parent.session.receive({to:"session",do:"test",test:"hello world"})
           </script>
       </head>
-  </HTML>
+  </HTML>`
 
   // 一个页面包含一个不可见的能够导航的<frame>
   // 在影藏的frame上面做一个POST请求发送信息到服务器
@@ -249,7 +249,7 @@
    // 批评者说它不能工作
    // 然而它还是能够工作！
    
-   // 下面补充一下,为何可以工作的远离:
+   // 下面补充一下,为何可以工作的原理:
    // 首先明确的是所有的JSON文本里面的都是以Unicode的code point来决定的,这个是约定好的,所以前端和后端
    // 需要针对unicode来进行对字符进行有意义表示,比如转码
    // 有了这个大前提,由于每个语言都有类似数组和对象的数据结构
@@ -307,16 +307,16 @@
 
      const rx_iso_date = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d*)? Z)?$/;
 
-     const text = JSON.parse(text,function (key,value) {
-       return (
-         typeof value ==== "string" && (
-           key.endsWith("_date")
-           || rx_iso_date.match(value)
-         )
-         ? new Date(value)
-         ：value
-       );
-     })
+     const text = JOSN.parse(text,function(key,value) {
+      return (
+          typeof value === "string" && (
+              key.endsWith("_date")
+              || rx_iso_date.match(value)
+          )
+          ? new Date(value)
+          : value
+      );
+    });
 
      // 下一个函数
 
@@ -334,13 +334,13 @@
        return (
          value instanceof Date
          ? value.toISOString()
-         :value
+         : value
        );
      });
 
      //(后来被证明我们不需要做这个,因为Date.prototype.toJSON已经能够自动实现了)
 
-     // repalcer参数也能欧是一个字符串数组,只有在这个数组的属性名最后才能被放入JSON中
+     // repalcer参数也能够是一个字符串数组,只有在这个数组的属性名最后才能被放入JSON中
      // 这是一个白名单,我们希望过滤那些我们不感兴趣的属性
      // 这个应该是一个单独的参数,而不是要占用过负荷replacer函数的位置
 
