@@ -425,3 +425,51 @@
 
  // 二进制浮点和10进制浮点都不能够准确表示像100/3
  
+
+
+ // 补,这2个方法原书中是没有的 2020-02-18
+
+ function integer(a) {
+
+    // The integer function is like the normalize function except that it throws
+    // away significance. It discards the digits after the decimal point.
+    
+        let {coefficient, exponent} = a;
+        if (coefficient.length < 2) {
+            return zero;
+        }
+    
+    // If the exponent is zero, it is already an integer.
+    
+        if (exponent === 0) {
+            return a;
+        }
+    
+    // If the exponent is positive,
+    // multiply the coefficient by 10 ** exponent.
+    
+        if (exponent > 0) {
+            return make_big_float(
+                big_integer.mul(
+                    coefficient,
+                    big_integer.power(big_integer.ten, exponent)
+                ),
+                0
+            );
+        }
+    
+    // If the exponent is negative, divide the coefficient by 10 ** -exponent.
+    // This truncates the unnecessary bits. This might be a zero result.
+    
+        return make_big_float(
+            big_integer.div(
+                coefficient,
+                big_integer.power(big_integer.ten, -exponent)
+            ),
+            0
+        );
+    }
+    
+    function fraction(a) {
+        return sub(a, integer(a));
+    }
